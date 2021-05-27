@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
+using FluentAssertions;
+using FluentAssertions.Execution;
 
 namespace ConsoleApp.Tests.xUnit
 {
@@ -55,9 +57,19 @@ namespace ConsoleApp.Tests.xUnit
             var actResult = calculator.Add(0, 1);
 
             //Assert
-            Assert.NotNull(calculationEventArgs);
-            Assert.Equal("0+1", calculationEventArgs.Expression);
-            Assert.Equal(actResult, calculationEventArgs.Result);
+
+            using (var scope = new AssertionScope())
+            {
+                calculationEventArgs.Should().NotBeNull();
+                calculationEventArgs.Expression.Should().Be("0+1");
+                calculationEventArgs.Result.Should().Be(actResult);
+            }
+            //calculationEventArgs.Should().NotBeNull().And
+            //    .Match<Calculator.CalculationEventArgs>(x => x.Expression == "0+0" && x.Result == actResult);
+
+            //Assert.NotNull(calculationEventArgs);
+            //Assert.Equal("0+1", calculationEventArgs.Expression);
+            //Assert.Equal(actResult, calculationEventArgs.Result);
         }
     }
 }
