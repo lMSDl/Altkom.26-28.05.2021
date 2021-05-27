@@ -1,3 +1,4 @@
+using FluentAssertions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -50,7 +51,8 @@ namespace ConsoleApp.Tests.Unit
             exceptionLogger.End();
 
             //Assert
-            Assert.Contains(input.Message, exceptionLogger.LogHistory.Single().Value);
+            exceptionLogger.LogHistory.Single().Value.Should().Contain(input.Message);
+            //Assert.Contains(input.Message, exceptionLogger.LogHistory.Single().Value);
         }
 
         [Fact]
@@ -64,7 +66,8 @@ namespace ConsoleApp.Tests.Unit
             var exception = new Exception(tooLongString);
 
             //Act&Assert
-            Assert.Throws<OverflowException>(() => exceptionLogger.Log(exception));
+            exceptionLogger.Invoking(x => x.Log(exception)).Should().ThrowExactly<OverflowException>();
+            //Assert.Throws<OverflowException>(() => exceptionLogger.Log(exception));
         }
 
         [Fact]
@@ -76,7 +79,8 @@ namespace ConsoleApp.Tests.Unit
             var exception = new Exception();
 
             //Act&Assert
-            Assert.Throws<NullReferenceException>(() => exceptionLogger.Log(exception));
+            exceptionLogger.Invoking(x => x.Log(exception)).Should().ThrowExactly<NullReferenceException>();
+            //Assert.Throws<NullReferenceException>(() => exceptionLogger.Log(exception));
         }
 
         [Fact]
@@ -97,7 +101,8 @@ namespace ConsoleApp.Tests.Unit
             var result = exceptionLogger.End();
 
             //Assert
-            Assert.Equal(result, message);
+            result.Should().Be(message);
+            //Assert.Equal(result, message);
         }
 
         [Fact]
@@ -112,7 +117,8 @@ namespace ConsoleApp.Tests.Unit
             var result = exceptionLogger.End();
 
             //Assert
-            Assert.Equal(eventSender, exceptionLogger);
+            eventSender.Should().NotBeNull().And.Be(exceptionLogger);
+            //Assert.Equal(eventSender, exceptionLogger);
         }
 
         [Fact]
@@ -127,7 +133,8 @@ namespace ConsoleApp.Tests.Unit
             exceptionLogger.End();
 
             //Assert
-            Assert.True(result);
+            result.Should().BeTrue();
+            //Assert.True(result);
         }
 
         [Fact]
@@ -144,8 +151,9 @@ namespace ConsoleApp.Tests.Unit
             //Assert.Throws<Exception>(action);
 
             //Act&Assert
-            var exception = Assert.Throws<Exception>(() => exceptionLogger.Begin());
-            Assert.Equal("Already began", exception.Message);
+            exceptionLogger.Invoking(x => x.Begin()).Should().Throw<Exception>().WithMessage("Already began");
+            //var exception = Assert.Throws<Exception>(() => exceptionLogger.Begin());
+            //Assert.Equal("Already began", exception.Message);
         }
 
         [Fact]
@@ -158,12 +166,15 @@ namespace ConsoleApp.Tests.Unit
             //Act
             exceptionLogger.Begin();
 
-            //Assert
-            
-            Assert.Single(exceptionLogger.LogHistory);
-            Assert.Null(exceptionLogger.LogHistory.Single().Value);
+            //Assert    
+
+            exceptionLogger.LogHistory.Should().HaveCount(1).And.ContainValue(null);
+            exceptionLogger.LogHistory.Single().Key.Should().BeOnOrAfter(dateTime).And.BeOnOrBefore(DateTime.UtcNow);
+
+            //Assert.Single(exceptionLogger.LogHistory);
+            //Assert.Null(exceptionLogger.LogHistory.Single().Value);
             //Assert.Equal(dateTime, exceptionLogger.LogHistory.Single().Key, TimeSpan.FromMinutes(1));
-            Assert.InRange(exceptionLogger.LogHistory.Single().Key, dateTime, DateTime.UtcNow);
+            //Assert.InRange(exceptionLogger.LogHistory.Single().Key, dateTime, DateTime.UtcNow);
         }
 
         [Fact]
@@ -177,7 +188,8 @@ namespace ConsoleApp.Tests.Unit
             var result = exceptionLogger.End();
 
             //Assert
-            Assert.True(DateTime.TryParseExact(result, "dd.MM.yyyy HH:mm:", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+            DateTime.TryParseExact(result, "dd.MM.yyyy HH:mm:", CultureInfo.InvariantCulture, DateTimeStyles.None, out _).Should().BeTrue();
+           // Assert.True(DateTime.TryParseExact(result, "dd.MM.yyyy HH:mm:", CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
         }
 
         [Fact]
@@ -193,7 +205,8 @@ namespace ConsoleApp.Tests.Unit
             await task;
 
             //Asert
-            Assert.True(task.IsCompleted);
+            task.IsCompleted.Should().BeTrue();
+            //Assert.True(task.IsCompleted);
         }
 
         [Fact]
@@ -209,7 +222,8 @@ namespace ConsoleApp.Tests.Unit
             exceptionLogger.End();
 
             //Asert
-            Assert.NotNull(exceptionLogger.LogHistory.Single().Value);
+            exceptionLogger.LogHistory.Should().HaveCount(1).And.NotContainValue(null);
+            //Assert.NotNull(exceptionLogger.LogHistory.Single().Value);
         }
     }
 }
