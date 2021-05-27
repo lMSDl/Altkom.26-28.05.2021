@@ -19,20 +19,22 @@ namespace CosoleApp.Tests.NUnit
         //[TestCase("message")]
         //[TestCase("message")]
         //public void Log_PassException_LogHistoryContainsSingleElementWithExceptionMessage(string input)
-        [TestCaseSource(nameof(Exceptions))]
-        public void Log_PassException_LogHistoryContainsSingleElementWithExceptionMessage(Exception input)
+        //[TestCaseSource(nameof(Exceptions))]
+        //public void Log_PassException_LogHistoryContainsSingleElementWithExceptionMessage(Exception input)
+        public void Log_PassException_LogHistoryContainsSingleElementWithExceptionMessage([Values("abc", "message")]string input)
+        //[Range(...)] [Random(...)]
         {
             //Arrange
             var exceptionLogger = new ExceptionLogger();
             exceptionLogger.Begin();
-            //var exception = new Exception(input);
+            var exception = new Exception(input);
 
             //Act
-            exceptionLogger.Log(input);
+            exceptionLogger.Log(exception);
             exceptionLogger.End();
 
             //Assert
-            StringAssert.Contains(input.Message, exceptionLogger.LogHistory.Single().Value);
+            StringAssert.Contains(input, exceptionLogger.LogHistory.Single().Value);
         }
 
         [Test]
