@@ -138,10 +138,12 @@ namespace CosoleApp.Tests.NUnit
             exceptionLogger.Begin();
 
             //Assert
-
-            Assert.That(exceptionLogger.LogHistory, Has.Count.EqualTo(1));
-            Assert.That(exceptionLogger.LogHistory.Single().Value, Is.Null);
-            Assert.That(exceptionLogger.LogHistory.Single().Key, Is.InRange(dateTime, DateTime.UtcNow));
+            Assert.Multiple(() =>
+            {
+                Assert.That(exceptionLogger.LogHistory, Has.Count.EqualTo(1));
+                Assert.That(exceptionLogger.LogHistory.Single().Value, Is.Null);
+                Assert.That(exceptionLogger.LogHistory.Single().Key, Is.InRange(dateTime, DateTime.UtcNow));
+            });
         }
 
         [Test]
